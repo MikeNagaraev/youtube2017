@@ -50,14 +50,19 @@
 	
 	var _layout2 = _interopRequireDefault(_layout);
 	
+	var _loader = __webpack_require__(2);
+	
+	var _loader2 = _interopRequireDefault(_loader);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var layout = new _layout2.default();
+	var loader = new _loader2.default();
+	var layout = new _layout2.default(loader);
 	layout.init();
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	'use strict';
 	
@@ -67,20 +72,14 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _loader = __webpack_require__(2);
-	
-	var _loader2 = _interopRequireDefault(_loader);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Layout = function () {
-		function Layout() {
+		function Layout(loader) {
 			_classCallCheck(this, Layout);
-		}
-		//////////////////////////////////////////////////////
 	
+			this.loader = loader;
+		}
 	
 		_createClass(Layout, [{
 			key: 'init',
@@ -161,12 +160,11 @@
 			key: 'pinSearchOnButton',
 			value: function pinSearchOnButton() {
 				this.clearResults();
-				var loader = new _loader2.default();
 				var inputVal = document.getElementById('search-input').value;
 				inputVal = inputVal.trim();
 				if (inputVal.length) {
 					document.getElementById('results').style.left = '0px';
-					loader.loadVideos(inputVal);
+					this.loader.loadVideos(inputVal);
 				}
 			}
 	
@@ -381,15 +379,25 @@
 	
 			this.queryCount = maxQueryCount;
 			this.nextPage = '';
+			this.value = '';
+			this.wasLoaded = false;
 		}
 	
 		_createClass(Loader, [{
 			key: 'loadVideos',
 			value: function loadVideos(valueQuery) {
 				this.value = valueQuery;
-				this.manager = new _slideManager2.default(this);
+				console.log(this.wasLoaded);
+				if (this.wasLoaded) {
+					this.nextPage = '';
+					this.manager.reInit();
+				} else {
+					this.manager = new _slideManager2.default(this);
+					this.wasLoaded = true;
+					this.manager.pinSwipe();
+				}
 				this.getVideos();
-				this.manager.pinSwipe();
+	
 				// this.fakeVideos();
 			}
 	
@@ -552,6 +560,13 @@
 		}
 	
 		_createClass(SlideManager, [{
+			key: 'reInit',
+			value: function reInit() {
+				this.animateTransition(false);
+				this.slides = [];
+				this.buffer = [];
+			}
+		}, {
 			key: 'pushItem',
 			value: function pushItem(item) {
 				this.buffer.push(item);

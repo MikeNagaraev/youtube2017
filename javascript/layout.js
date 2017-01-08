@@ -1,7 +1,8 @@
-import Loader from './loader'
 export default class Layout {
-	constructor() {}
-		//////////////////////////////////////////////////////
+	constructor(loader) {
+		this.loader = loader;
+	}
+
 	init() {
 		this.renderContainer();
 		this.renderFooter();
@@ -69,12 +70,11 @@ export default class Layout {
 
 	pinSearchOnButton() {
 		this.clearResults();
-		let loader = new Loader();
 		let inputVal = document.getElementById('search-input').value;
 		inputVal = inputVal.trim();
 		if (inputVal.length) {
 			document.getElementById('results').style.left = '0px';
-			loader.loadVideos(inputVal);
+			this.loader.loadVideos(inputVal);
 		}
 	}
 

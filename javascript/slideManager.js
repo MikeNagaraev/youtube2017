@@ -13,6 +13,12 @@ export default class SlideManager {
 		this.buffer = [];
 	}
 
+	reInit() {
+		this.animateTransition(false);
+		this.slides = [];
+		this.buffer = [];
+	}
+
 	pushItem(item) {
 		this.buffer.push(item);
 		if (this.buffer.length === maxItemsInSlide) {

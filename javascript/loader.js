@@ -7,14 +7,25 @@ export default class Loader {
 	constructor() {
 		this.queryCount = maxQueryCount;
 		this.nextPage = '';
+		this.value = '';
+		this.wasLoaded = false;
 	}
 
 	loadVideos(valueQuery) {
 		this.value = valueQuery;
-		this.manager = new SlideManager(this);
+		console.log(this.wasLoaded)
+		if (this.wasLoaded) {
+			this.nextPage = '';
+			this.manager.reInit();
+		} else {
+			this.manager = new SlideManager(this);
+			this.wasLoaded = true;
+			this.manager.pinSwipe()
+		}
 		this.getVideos();
-		this.manager.pinSwipe()
-			// this.fakeVideos();
+
+
+		// this.fakeVideos();
 	}
 
 	// fakeVideos() {
