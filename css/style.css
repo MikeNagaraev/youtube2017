@@ -7,7 +7,7 @@ body {
 		height: 100%;
 		margin: 0;
 		padding: 0;
-		background: url('http://2.bp.blogspot.com/-axnVjHhK1EQ/Tx-MgcRb0qI/AAAAAAAADTY/V3A0Z6Whn8Q/s1600/free%2Bdigital%2Bscrapbook%2Bpaper_red%2Band%2Bwhite_stripes.jpg');
+		background: url('../images/background.jpg');
 		background-size: 100% 100%;
 		overflow: hidden;
 }
@@ -19,7 +19,7 @@ body {
 }
 
 #header-site {
-		background: url('http://content.wallpapers-room.com/resolutions/1600x1000/B/Wallpapers-room_com___Black_Background_Set_Hole_2_by_iAmFreeman_1600x1000.jpg');
+		background: url('../images/header.jpg');
 		box-shadow: 0px 7px 10px #000000;
 		display: inline-block;
 		min-width: 100%;
