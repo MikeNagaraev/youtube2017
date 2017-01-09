@@ -1,5 +1,6 @@
 const maxCountInScreen = () => {
 	let widthScreen = document.documentElement.clientWidth;
+	console.log(widthScreen)
 	switch (true) {
 		case widthScreen <= 800:
 			return 1;

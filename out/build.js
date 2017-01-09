@@ -167,9 +167,6 @@
 					this.loader.loadVideos(inputVal);
 				}
 			}
-	
-			///////////////////////////////////////////////////////////////
-	
 		}, {
 			key: 'renderSlides',
 			value: function renderSlides(slides) {
@@ -386,21 +383,6 @@
 					this.addPageToFooter(i);
 				}
 			}
-	
-			/////// TODO ///////
-	
-		}, {
-			key: 'addPreviousPage',
-			value: function addPreviousPage() {
-				var li = document.createElement('li'),
-				    link = document.createElement('a');
-				link.innerHTML = 'Previous';
-				li.appendChild(link);
-				document.querySelector('.pagination').insertBefore(li);
-			}
-		}, {
-			key: 'addNextPage',
-			value: function addNextPage() {}
 		}]);
 	
 		return Layout;
@@ -428,17 +410,13 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var apiKey = 'AIzaSyAeSlcNwi1BcFtSx_LX6Yv3o-OozPJ5aLk'; //AIzaSyBq_TNf3mo1y7mI6Yrtb23E5t1qA7eZlxEx
-	//
-	//
-	
+	var apiKey = 'AIzaSyAeSlcNwi1BcFtSx_LX6Yv3o-OozPJ5aLk';
 	var maxQueryCount = 15;
 	
 	var Loader = function () {
 		function Loader() {
 			_classCallCheck(this, Loader);
 	
-			this.queryCount = maxQueryCount;
 			this.nextPage = '';
 			this.value = '';
 			this.wasLoaded = false;
@@ -457,33 +435,7 @@
 					this.manager.pinListeners();
 				}
 				this.getVideos();
-	
-				// this.fakeVideos();
 			}
-	
-			// fakeVideos() {
-			// 	let fakeVideos = [];
-			// 	let fakeItem = {
-			// 		hrefYouTube: 'https://www.youtube.com/watch?v=' + 'KesUyAZ1cHk',
-			// 		iframe: 'https://www.youtube.com/embed/' + 'KesUyAZ1cHk',
-			// 		title: 'Title',
-			// 		imgUrl: 'https://i.ytimg.com/vi/OBSx0laWFZk/maxresdefault.jpg',
-			// 		channel: 'channel',
-			// 		date: '2015-11-11',
-			// 		views: 120,
-			// 		likes: 230,
-			// 		dislikes: 10,
-			// 		comments: 10,
-			// 		description: 'blablablabla',
-			// 		videoId: 'KesUyAZ1cHk'
-			// 	}
-			// 	for (let i = 0; i < 12; i++) {
-			// 		fakeVideos.push(fakeItem)
-			// 	}
-			// 	let slideManager = new SlideManager();
-			// 	slideManager.getItems(fakeVideos);
-			// }
-	
 		}, {
 			key: 'getVideos',
 			value: function getVideos() {
@@ -507,17 +459,6 @@
 					_this.pushStatistics(videoObjs);
 				});
 			}
-			//
-			// checkCorrectData(items) {
-			// 	console.log('error')
-			// 	for (let i = 0; i < items.length; i++) {
-			// 		if (!items[i].id.videoId) {
-			// 			return false;
-			// 		}
-			// 	}
-			// 	return true;
-			// }
-	
 		}, {
 			key: 'formObjects',
 			value: function formObjects(arrayVideos) {
@@ -634,6 +575,7 @@
 			value: function pushItem(video) {
 				this.buffer.push(video);
 				this.maxItems = (0, _resize.maxCountInScreen)();
+				console.log(this.maxItems);
 				if (this.buffer.length === this.maxItems) {
 					if (this.slides.length === 0) {
 						this.slides.push(new _slide2.default(this.buffer, 0, 'active'));
@@ -765,7 +707,6 @@
 		}, {
 			key: 'setLeftFlag',
 			value: function setLeftFlag(slideId) {
-				console.log(this.slides[slideId].items[0].title);
 				this.slides[slideId].items[0].left = true;
 				this.wasLeftSlide = true;
 			}
@@ -941,16 +882,6 @@
 			value: function isActive() {
 				return this.state === 'active' ? true : false;
 			}
-	
-			//
-			// set items(items) {
-			// 	this.items = items;
-			// }
-			//
-			// get items() {
-			// 	return this.items;
-			// }
-	
 		}]);
 	
 		return Slide;
@@ -967,17 +898,9 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	// const resize = () => {
-	// 	let widthScreen = document.documentElement.clientWidth;
-	// 	// if (wasSize >= widthScreen) {
-	// 	// 	console.log(wasSize, widthScreen)
-	// 	// 	return;
-	// 	// }
-	// 	return maxCountInScreen();
-	// }
-	
 	var maxCountInScreen = function maxCountInScreen() {
 		var widthScreen = document.documentElement.clientWidth;
+		console.log(widthScreen);
 		switch (true) {
 			case widthScreen <= 800:
 				return 1;
@@ -991,11 +914,6 @@
 				return 4;
 		}
 	};
-	
-	//
-	// const calculateSlides = maxCount => slides => {
-	//
-	// }
 	
 	exports.maxCountInScreen = maxCountInScreen;
 

@@ -125,6 +125,7 @@ body {
 		box-shadow: 4px 3px 10px #ff0000, -4px -3px 10px #ff0000;
 }
 
+
 /*	ANDROID SAMSUNG GALAXY S2		*/
 
 @media only screen and (min-device-width: 480px) and (max-device-width: 800px) and (orientation: landscape) {}
@@ -337,4 +338,40 @@ body {
 .active {
 		background: #ff4c4c !important;
 		color: #ffffff !important;
+}
+
+
+/*	ANDROID SAMSUNG GALAXY S2		*/
+
+@media only screen and (min-device-width: 480px) and (max-device-width: 800px) and (orientation: landscape) {}
+
+@media only screen and (min-device-width: 480px) and (max-device-width: 800px) and (orientation: portrait) {
+		#search-form {
+				box-sizing: border-box;
+				padding: 20px;
+				margin: 0;
+				width: 100%;
+		}
+		#search-form #youtube-icon {
+				display: none;
+		}
+		#search-input, #search-button {
+				width: 100%;
+				outline: none;
+				height: 70px;
+				margin: 0;
+				font-size: 2rem;
+		}
+		#search-button #search-icon {
+				width: 25px;
+				height: 25px;
+		}
+		.slide {
+				width: 100vw;
+				position: absolute;
+		}
+		.videoList>li {
+				width: 70vw;
+				height: 520px;
+		}
 }

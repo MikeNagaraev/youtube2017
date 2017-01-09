@@ -28,6 +28,7 @@ export default class SlideManager {
 	pushItem(video) {
 		this.buffer.push(video);
 		this.maxItems = maxCountInScreen()
+		console.log(this.maxItems)
 		if (this.buffer.length === this.maxItems) {
 			if (this.slides.length === 0) {
 				this.slides.push(new Slide(this.buffer, 0, 'active'))
@@ -144,7 +145,6 @@ export default class SlideManager {
 	}
 
 	setLeftFlag(slideId) {
-		console.log(this.slides[slideId].items[0].title)
 		this.slides[slideId].items[0].left = true;
 		this.wasLeftSlide = true;
 	}
