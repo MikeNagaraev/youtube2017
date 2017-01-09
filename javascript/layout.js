@@ -6,6 +6,7 @@ export default class Layout {
 	init() {
 		this.renderContainer();
 		this.renderFooter();
+		this.pinStopIframes();
 	}
 
 	renderContainer() {
@@ -138,12 +139,24 @@ export default class Layout {
 		li.appendChild(imageDiv);
 	}
 
+	pinStopIframes() {
+		document.body.addEventListener('click', e => {
+			if (e.target.className !== 'play-video' && e.target.className !== 'fa fa-play') {
+				let iframes = document.querySelectorAll('iframe');
+				for (let i = 0; i < iframes.length; i++) {
+					iframes[i].parentNode.children[0].style.display = 'block';
+					iframes[i].parentNode.children[1].style.display = 'block';
+					iframes[i].parentNode.removeChild(iframes[i]);
+				}
+			}
+		});
+	}
+
 	pinIframeOnImg(img, play, iframe, imageDiv) {
 		play.addEventListener('click', e => {
 			this.renderIframe(iframe, imageDiv);
 			img.style.display = 'none';
-			iframe.style.display = 'flex';
-			e.preventDefault();
+			iframe.style.display = 'block';
 			play.style.display = 'none';
 		});
 	}

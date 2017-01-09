@@ -107,7 +107,6 @@ body {
 }
 
 .videoList>li {
-		/*flex: 1;*/
 		width: 350px;
 		margin: 10px;
 		padding: 10px;
@@ -167,13 +166,8 @@ body {
 		height: 100%;
 }
 
-.image-video:hover .play-video {
-		display: block;
-}
-
 .image-video .play-video {
 		position: absolute;
-		display: none;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
