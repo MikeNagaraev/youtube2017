@@ -28,7 +28,6 @@ export default class SlideManager {
 	pushItem(video) {
 		this.buffer.push(video);
 		this.maxItems = maxCountInScreen()
-		console.log(this.maxItems)
 		if (this.buffer.length === this.maxItems) {
 			if (this.slides.length === 0) {
 				this.slides.push(new Slide(this.buffer, 0, 'active'))
@@ -209,11 +208,15 @@ export default class SlideManager {
 
 
 	pinSwipe() {
+		this.pinMouseSwipe();
+		this.pinTouchSwipe();
+	}
+
+	pinMouseSwipe() {
 		document.getElementById('results').addEventListener('mousedown', (e) => {
 			e.preventDefault();
 			this.swipe.mouseDown = true;
 			this.swipe.x = e.pageX;
-			this.swipe.y = e.pageY;
 		});
 
 		document.getElementById('results').addEventListener('mousemove', e => {
@@ -234,6 +237,38 @@ export default class SlideManager {
 					this.backSlide()
 				}
 				if (deltaX > 150) {
+					this.slideRight();
+				} else {
+					this.backSlide()
+				}
+				this.swipe.mouseDown = false;
+			};
+		});
+	}
+
+	pinTouchSwipe() {
+		document.getElementById('results').addEventListener('touchstart', (e) => {
+			this.swipe.mouseDown = true;
+			this.swipe.x = e.changedTouches[0].clientX;
+		});
+
+		document.getElementById('results').addEventListener('touchmove', e => {
+			if (this.swipe.mouseDown && this.slides.length) {
+				let deltaX = this.swipe.x - e.changedTouches[0].clientX;
+				let slideLeftPos = parseInt(this.slides[this.findActiveSlide()].posLeft, 10);
+				this.animateTransition(false)
+				this.setContainerPos(-slideLeftPos - deltaX);
+			}
+		});
+		document.addEventListener('touchend', (e) => {
+			if (this.swipe.mouseDown) {
+				let deltaX = this.swipe.x - e.changedTouches[0].clientX;
+				if (deltaX < -50) {
+					this.slideLeft();
+				} else {
+					this.backSlide()
+				}
+				if (deltaX > 50) {
 					this.slideRight();
 				} else {
 					this.backSlide()

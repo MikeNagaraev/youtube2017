@@ -327,8 +327,6 @@ body {
 
 /*	ANDROID SAMSUNG GALAXY S2		*/
 
-@media only screen and (min-device-width: 480px) and (max-device-width: 800px) and (orientation: landscape) {}
-
 @media only screen and (min-device-width: 480px) and (max-device-width: 800px) and (orientation: portrait) {
     body {
         font-size: 5px;

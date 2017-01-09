@@ -575,7 +575,6 @@
 			value: function pushItem(video) {
 				this.buffer.push(video);
 				this.maxItems = (0, _resize.maxCountInScreen)();
-				console.log(this.maxItems);
 				if (this.buffer.length === this.maxItems) {
 					if (this.slides.length === 0) {
 						this.slides.push(new _slide2.default(this.buffer, 0, 'active'));
@@ -780,13 +779,18 @@
 		}, {
 			key: 'pinSwipe',
 			value: function pinSwipe() {
+				this.pinMouseSwipe();
+				this.pinTouchSwipe();
+			}
+		}, {
+			key: 'pinMouseSwipe',
+			value: function pinMouseSwipe() {
 				var _this4 = this;
 	
 				document.getElementById('results').addEventListener('mousedown', function (e) {
 					e.preventDefault();
 					_this4.swipe.mouseDown = true;
 					_this4.swipe.x = e.pageX;
-					_this4.swipe.y = e.pageY;
 				});
 	
 				document.getElementById('results').addEventListener('mousemove', function (e) {
@@ -815,6 +819,41 @@
 					};
 				});
 			}
+		}, {
+			key: 'pinTouchSwipe',
+			value: function pinTouchSwipe() {
+				var _this5 = this;
+	
+				document.getElementById('results').addEventListener('touchstart', function (e) {
+					_this5.swipe.mouseDown = true;
+					_this5.swipe.x = e.changedTouches[0].clientX;
+				});
+	
+				document.getElementById('results').addEventListener('touchmove', function (e) {
+					if (_this5.swipe.mouseDown && _this5.slides.length) {
+						var deltaX = _this5.swipe.x - e.changedTouches[0].clientX;
+						var slideLeftPos = parseInt(_this5.slides[_this5.findActiveSlide()].posLeft, 10);
+						_this5.animateTransition(false);
+						_this5.setContainerPos(-slideLeftPos - deltaX);
+					}
+				});
+				document.addEventListener('touchend', function (e) {
+					if (_this5.swipe.mouseDown) {
+						var deltaX = _this5.swipe.x - e.changedTouches[0].clientX;
+						if (deltaX < -50) {
+							_this5.slideLeft();
+						} else {
+							_this5.backSlide();
+						}
+						if (deltaX > 50) {
+							_this5.slideRight();
+						} else {
+							_this5.backSlide();
+						}
+						_this5.swipe.mouseDown = false;
+					};
+				});
+			}
 		}]);
 	
 		return SlideManager;
@@ -839,7 +878,6 @@
 	
 		this.mouseDown = false;
 		this.x = 0;
-		this.y = 0;
 	};
 	
 	exports.default = Swipe;
@@ -900,7 +938,6 @@
 	});
 	var maxCountInScreen = function maxCountInScreen() {
 		var widthScreen = document.documentElement.clientWidth;
-		console.log(widthScreen);
 		switch (true) {
 			case widthScreen <= 800:
 				return 1;
