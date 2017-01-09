@@ -14,6 +14,6 @@ export default class Slide {
 	}
 
 	isActive() {
-		return this.state === 'active' ? true : false
+		return this.state === 'active' ? true : false;
 	}
 }

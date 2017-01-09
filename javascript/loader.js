@@ -1,4 +1,4 @@
-import SlideManager from './slideManager'
+import SlideManager from './slideManager';
 const apiKey = 'AIzaSyAeSlcNwi1BcFtSx_LX6Yv3o-OozPJ5aLk';
 const maxQueryCount = 15;
 export default class Loader {
@@ -12,7 +12,7 @@ export default class Loader {
 		this.value = valueQuery;
 		if (this.wasLoaded) {
 			this.nextPage = '';
-			this.manager.reInit();
+			this.manager.clearSlides();
 		} else {
 			this.manager = new SlideManager(this);
 			this.wasLoaded = true;
@@ -37,19 +37,19 @@ export default class Loader {
 				return items;
 			})
 			.then(items => {
-				items = this.formObjects(items)
+				items = this.formObjects(items);
 				return items.slice(1, items.length);
 			})
 			.then(videoObjs => {
-				this.pushStatistics(videoObjs)
-			})
+				this.pushStatistics(videoObjs);
+			});
 	}
 
 	formObjects(arrayVideos) {
 		let result = [];
 		arrayVideos.forEach(video => {
 			result.push(this.getVideoObject(video));
-		})
+		});
 		return result;
 	}
 
@@ -82,8 +82,8 @@ export default class Loader {
 						item.dislikes = statistic.items[0].statistics.dislikeCount;
 						item.comments = statistic.items[0].statistics.commentCount;
 						this.manager.pushItem(item);
-					}).catch(err => console.log(err))
+					}).catch(err => console.log(err));
 			}
-		})
+		});
 	}
 }

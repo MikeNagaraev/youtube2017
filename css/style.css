@@ -328,13 +328,9 @@ body {
 
 /*	NEXUS 5X		*/
 
-@media only screen and (min-device-width: 340px) and (max-device-width: 732px) and (orientation: portrait) {
+@media only screen and (min-device-width: 412px) and (max-device-width: 732px) and (orientation: portrait) {
 		body {
 				font-size: 5px;
-				min-width: 340px;
-				max-width: 732px;
-				min-height: 340px;
-				max-height: 732px;
 		}
 		#search-form {
 				box-sizing: border-box;

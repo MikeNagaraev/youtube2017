@@ -12,8 +12,8 @@ const maxCountInScreen = () => {
 		default:
 			return 4;
 	}
-}
+};
 
 export {
-	maxCountInScreen,
-}
+	maxCountInScreen
+};

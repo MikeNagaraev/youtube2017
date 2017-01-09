@@ -17,28 +17,27 @@ export default class SlideManager {
 		this.buffer = [];
 	}
 
-	reInit() {
+	clearSlides() {
 		this.animateTransition(false);
 		this.slides = [];
 		this.buffer = [];
 		this.layout.clearResults();
-		this.layout.clearFooter();
 	}
 
 	pushItem(video) {
 		this.buffer.push(video);
-		this.maxItems = maxCountInScreen()
+		this.maxItems = maxCountInScreen();
 		if (this.buffer.length === this.maxItems) {
 			if (this.slides.length === 0) {
-				this.slides.push(new Slide(this.buffer, 0, 'active'))
+				this.slides.push(new Slide(this.buffer, 0, 'active'));
 			} else {
 				this.slides.push(new Slide(this.buffer,
-					this.slides[this.slides.length - 1].id + 1))
+					this.slides[this.slides.length - 1].id + 1));
 			}
 			this.layout.renderSlide(this.lastSlide());
-			this.layout.addPageToFooter(this.countSlides())
+			this.layout.addPageToFooter(this.countSlides());
 			if (this.countSlides() === 1) {
-				this.layout.makeActiveState(0)
+				this.layout.makeActivePage(0);
 			}
 			this.buffer = [];
 		}
@@ -48,7 +47,7 @@ export default class SlideManager {
 		for (let i = 0; i < slides.length; i++) {
 			slides[i].items.forEach(video => {
 				this.pushItem(video);
-			})
+			});
 		}
 	}
 
@@ -74,48 +73,48 @@ export default class SlideManager {
 	}
 
 	slideLeft(transitionId) {
-		let oldActiveId = this.findActiveSlide();
+		let oldActiveId = this.getActiveSlideId();
 		if (oldActiveId) {
 			let newActiveId = typeof transitionId === 'number' ? transitionId : oldActiveId - 1;
 			this.slides[oldActiveId].setState('passive');
 			this.slides[newActiveId].setState('active');
 			let slideLeftPos = parseInt(this.slides[newActiveId].posLeft, 10);
 			this.animateTransition(true);
-			this.resetLeftFlag();
-			this.changeFooterPage(newActiveId);
+			this.resetLeftSlide();
+			this.changePageFooter(newActiveId);
 			this.setContainerPos(-slideLeftPos);
 		}
 	}
 
 	slideRight(transitionId) {
-		let oldActiveId = this.findActiveSlide(),
+		let oldActiveId = this.getActiveSlideId(),
 			newActiveId = typeof transitionId === 'number' ? transitionId : oldActiveId + 1;
 		if (oldActiveId != this.slides.length - 1) {
 			this.slides[oldActiveId].setState('passive');
 			this.slides[newActiveId].setState('active');
 			let slideLeftPos = parseInt(this.slides[newActiveId].posLeft, 10);
 			this.animateTransition(true);
-			this.resetLeftFlag();
-			this.changeFooterPage(newActiveId);
+			this.resetLeftSlide();
+			this.changePageFooter(newActiveId);
 			this.setContainerPos(-slideLeftPos);
 		}
 		this.preLoadVideos();
 	}
 
-	changeFooterPage(newSlideId) {
+	changePageFooter(newSlideId) {
 		if (newSlideId == 1) {
-			this.layout.changeValuesPages(newSlideId, this.slides.length)
-			this.layout.makeActiveState(newSlideId);
+			this.layout.changeValuesPages(newSlideId, this.slides.length);
+			this.layout.makeActivePage(newSlideId);
 		} else if (newSlideId == 0) {
-			this.layout.makeActiveState(newSlideId);
+			this.layout.makeActivePage(newSlideId);
 		} else {
-			this.layout.changeValuesPages(newSlideId - 1, this.slides.length)
-			this.layout.makeActiveState(2);
+			this.layout.changeValuesPages(newSlideId - 1, this.slides.length);
+			this.layout.makeActivePage(2);
 		}
 	}
 
 	preLoadVideos() {
-		if (this.findActiveSlide() >= this.slides.length - 2) {
+		if (this.getActiveSlideId() >= this.slides.length - 2) {
 			this.loader.getVideos();
 		}
 	}
@@ -126,10 +125,10 @@ export default class SlideManager {
 
 	animateTransition(flag) {
 		let container = document.getElementById('results');
-		container.style.transition = flag ? "left .5s" : "left .0s";
+		container.style.transition = flag ? "left 1.0s" : "left .0s";
 	}
 
-	findActiveSlide() {
+	getActiveSlideId() {
 		for (let i = 0; i < this.slides.length; i++) {
 			if (this.slides[i].isActive()) {
 				return i;
@@ -138,28 +137,28 @@ export default class SlideManager {
 	}
 
 	backSlide() {
-		let slideLeftPos = parseInt(this.slides[this.findActiveSlide()].posLeft, 10);
-		this.animateTransition(true)
+		let slideLeftPos = parseInt(this.slides[this.getActiveSlideId()].posLeft, 10);
+		this.animateTransition(true);
 		this.setContainerPos(-slideLeftPos);
 	}
 
-	setLeftFlag(slideId) {
+	setLeftSlide(slideId) {
 		this.slides[slideId].items[0].left = true;
 		this.wasLeftSlide = true;
 	}
 
-	resetLeftFlag() {
+	resetLeftSlide() {
 		if (this.wasLeftSlide) {
 			for (let i = 0; i < this.countSlides(); i++) {
 				this.slides[i].items.forEach(video => {
 					if (video.left) video.left = false;
-				})
+				});
 			}
 			this.wasLeftSlide = false;
 		}
 	}
 
-	findSlideByLeftFlag() {
+	getLeftSlide() {
 		for (let i = 0; i < this.countSlides(); i++) {
 			for (let j = 0; j < this.slides[i].items.length; j++) {
 				if (this.slides[i].items[j].left) return i;
@@ -176,7 +175,7 @@ export default class SlideManager {
 	pinTransitionPage() {
 		document.querySelector('.pagination').addEventListener('click', e => {
 			if (e.target.className == 'page') {
-				let currentSlide = this.findActiveSlide(),
+				let currentSlide = this.getActiveSlideId(),
 					newSlide = parseInt(e.target.innerHTML, 10) - 1;
 				if (newSlide > currentSlide) {
 					this.slideRight(newSlide);
@@ -184,28 +183,28 @@ export default class SlideManager {
 					this.slideLeft(newSlide);
 				}
 			}
-		})
+		});
 	}
 
 	pinResize() {
 		window.addEventListener('resize', () => {
-			if (this.countSlides()) {
-				let wasActiveSlideId = this.findActiveSlide();
+			if (!this.layout.isEmpty()) {
+				let wasActiveSlideId = this.getActiveSlideId();
 				if (!this.wasLeftSlide) {
-					this.setLeftFlag(wasActiveSlideId)
+					this.setLeftSlide(wasActiveSlideId);
 				} else {
 					let slides = this.slides;
-					this.reInit();
+					this.clearSlides();
 					this.pushItems(slides);
-					let resizedSlideId = this.findSlideByLeftFlag();
-					this.setActiveSLide(resizedSlideId)
-					this.setContainerPos(-resizedSlideId * document.documentElement.clientWidth)
-					this.changeFooterPage(resizedSlideId)
+					slides = [];
+					let resizedSlideId = this.getLeftSlide();
+					this.setActiveSLide(resizedSlideId);
+					this.setContainerPos(-resizedSlideId * document.documentElement.clientWidth);
+					this.changePageFooter(resizedSlideId);
 				}
 			}
-		})
+		});
 	}
-
 
 	pinSwipe() {
 		this.pinMouseSwipe();
@@ -222,8 +221,8 @@ export default class SlideManager {
 		document.getElementById('results').addEventListener('mousemove', e => {
 			if (this.swipe.mouseDown && this.slides.length) {
 				let deltaX = this.swipe.x - e.pageX;
-				let slideLeftPos = parseInt(this.slides[this.findActiveSlide()].posLeft, 10);
-				this.animateTransition(false)
+				let slideLeftPos = parseInt(this.slides[this.getActiveSlideId()].posLeft, 10);
+				this.animateTransition(false);
 				this.setContainerPos(-slideLeftPos - deltaX);
 			}
 		});
@@ -234,12 +233,12 @@ export default class SlideManager {
 				if (deltaX < -150) {
 					this.slideLeft();
 				} else {
-					this.backSlide()
+					this.backSlide();
 				}
 				if (deltaX > 150) {
 					this.slideRight();
 				} else {
-					this.backSlide()
+					this.backSlide();
 				}
 				this.swipe.mouseDown = false;
 			};
@@ -255,8 +254,8 @@ export default class SlideManager {
 		document.getElementById('results').addEventListener('touchmove', e => {
 			if (this.swipe.mouseDown && this.slides.length) {
 				let deltaX = this.swipe.x - e.changedTouches[0].clientX;
-				let slideLeftPos = parseInt(this.slides[this.findActiveSlide()].posLeft, 10);
-				this.animateTransition(false)
+				let slideLeftPos = parseInt(this.slides[this.getActiveSlideId()].posLeft, 10);
+				this.animateTransition(false);
 				this.setContainerPos(-slideLeftPos - deltaX);
 			}
 		});
@@ -266,12 +265,12 @@ export default class SlideManager {
 				if (deltaX < -50) {
 					this.slideLeft();
 				} else {
-					this.backSlide()
+					this.backSlide();
 				}
 				if (deltaX > 50) {
 					this.slideRight();
 				} else {
-					this.backSlide()
+					this.backSlide();
 				}
 				this.swipe.mouseDown = false;
 			};

@@ -8,11 +8,6 @@ export default class Layout {
 		this.renderFooter();
 	}
 
-	clearResults() {
-		document.getElementById('results').innerHTML = '';
-		document.getElementById('search-input').focus();
-	}
-
 	renderContainer() {
 		let container = document.createElement('div'),
 			header = document.createElement('div'),
@@ -27,48 +22,54 @@ export default class Layout {
 	}
 
 	renderForm() {
-		let form = document.createElement('form'),
-			img = document.createElement('img');
-
+		let form = document.createElement('form');
 		form.setAttribute('id', 'search-form');
 		form.setAttribute('action', '#');
 		document.getElementById('header-site').appendChild(form);
-		img.setAttribute('src', './images/youtube.png');
-		img.setAttribute('id', 'youtube-icon');
-		form.appendChild(img);
-		img.addEventListener('click', () => {
-			this.clearResults();
-			document.getElementById('search-input').value = '';
-			document.getElementById('results').style.left = '0px';
-		})
+		this.renderIcon();
 		this.renderInput();
 		this.renderButton();
 	}
 
+	renderIcon() {
+		let img = document.createElement('img');
+		img.setAttribute('src', './images/youtube.png');
+		img.setAttribute('id', 'youtube-icon');
+		document.getElementById('search-form').appendChild(img);
+		img.addEventListener('click', () => {
+			this.clearResults();
+			document.getElementById('search-input').value = '';
+			document.getElementById('results').style.left = '0px';
+		});
+	}
+
 	renderInput() {
 		let input = document.createElement('input');
-
 		input.setAttribute('type', 'text');
 		input.setAttribute('id', 'search-input');
 		input.setAttribute('autofocus', 'true');
+		input.addEventListener('keyup', e => {
+			if (e.keyCode === 13) {
+				this.startSearch();
+			}
+		});
 		document.getElementById('search-form').appendChild(input);
 	}
 
 	renderButton() {
 		let searchButton = document.createElement('button'),
-			span = document.createElement('span')
-
+			span = document.createElement('span');
 		searchButton.setAttribute('type', 'submit');
 		searchButton.setAttribute('id', 'search-button');
-		searchButton.addEventListener('click', () => {
-			this.pinSearchOnButton();
-		});
 		span.setAttribute('id', 'search-icon');
 		searchButton.appendChild(span);
+		searchButton.addEventListener('click', () => {
+			this.startSearch();
+		});
 		document.getElementById('search-form').appendChild(searchButton);
 	}
 
-	pinSearchOnButton() {
+	startSearch() {
 		this.clearResults();
 		let inputVal = document.getElementById('search-input').value;
 		inputVal = inputVal.trim();
@@ -96,7 +97,7 @@ export default class Layout {
 		slide.posLeft = slideDiv.style.left;
 		slide.items.forEach(item => {
 			this.renderVideo(item, videoList);
-		})
+		});
 	}
 
 	renderVideo(video, videoList) {
@@ -116,7 +117,7 @@ export default class Layout {
 		let titleDiv = document.createElement('div'),
 			h3 = document.createElement('h3'),
 			a = document.createElement('a');
-		a.setAttribute('href', href)
+		a.setAttribute('href', href);
 		titleDiv.setAttribute('class', 'title-video');
 		h3.innerHTML = title;
 		a.appendChild(h3);
@@ -129,7 +130,7 @@ export default class Layout {
 			imgTag = document.createElement('img'),
 			iframe = document.createElement('iframe'),
 			play = document.createElement('div'),
-			playIcon = document.createElement('i')
+			playIcon = document.createElement('i');
 		play.setAttribute('class', 'play-video');
 		playIcon.setAttribute('class', 'fa fa-play');
 		play.appendChild(playIcon);
@@ -142,20 +143,20 @@ export default class Layout {
 		li.appendChild(imageDiv);
 	}
 
-	renderIframe(iframe, imageDiv) {
-		iframe.setAttribute('frameborder', '0');
-		iframe.setAttribute('allowfullscreen', '')
-		imageDiv.appendChild(iframe);
-	}
-
 	pinIframeOnImg(img, play, iframe, imageDiv) {
 		play.addEventListener('click', e => {
-			this.renderIframe(iframe, imageDiv)
+			this.renderIframe(iframe, imageDiv);
 			img.style.display = 'none';
 			iframe.style.display = 'flex';
 			e.preventDefault();
 			play.style.display = 'none';
-		})
+		});
+	}
+
+	renderIframe(iframe, imageDiv) {
+		iframe.setAttribute('frameborder', '0');
+		iframe.setAttribute('allowfullscreen', '');
+		imageDiv.appendChild(iframe);
 	}
 
 	renderDate(li, date) {
@@ -182,14 +183,13 @@ export default class Layout {
 		p.appendChild(icon);
 		p.appendChild(span);
 		itemDiv.appendChild(p);
-		itemDiv.setAttribute('class', 'item-div')
+		itemDiv.setAttribute('class', 'item-div');
 		li.appendChild(itemDiv);
 	}
 
 	renderViewInfo(li, views, likes, dislikes, comments) {
 		let viewDiv = document.createElement('div'),
 			ul = document.createElement('ul');
-
 		viewDiv.setAttribute('class', 'views-info');
 		this.renderViewItem(ul, 'fa fa-eye', views);
 		this.renderViewItem(ul, 'fa fa-thumbs-o-up', likes);
@@ -213,7 +213,7 @@ export default class Layout {
 	renderFooter() {
 		let footer = document.createElement('div'),
 			pagination = document.createElement('ul');
-		footer.setAttribute('class', 'footer')
+		footer.setAttribute('class', 'footer');
 		pagination.setAttribute('class', 'pagination');
 		footer.appendChild(pagination);
 		document.body.appendChild(footer);
@@ -224,15 +224,15 @@ export default class Layout {
 		pagination.innerHTML = '';
 	}
 
-	removeActiveState() {
+	removeActivePage() {
 		let pages = document.querySelector('.pagination').children;
 		for (let i = 0; i < pages.length; i++) {
 			pages[i].className = "";
 		}
 	}
 
-	makeActiveState(page) {
-		this.removeActiveState();
+	makeActivePage(page) {
+		this.removeActivePage();
 		if (typeof page != 'number') {
 			page.classList.add('active');
 		} else {
@@ -267,4 +267,15 @@ export default class Layout {
 			this.addPageToFooter(i);
 		}
 	}
+
+	clearResults() {
+		document.getElementById('results').innerHTML = '';
+		document.getElementById('search-input').focus();
+		this.clearFooter();
+	}
+
+	isEmpty() {
+		return document.getElementById('results').innerHTML ? false : true;
+	}
+
 }
