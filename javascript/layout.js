@@ -48,11 +48,6 @@ export default class Layout {
 		input.setAttribute('type', 'text');
 		input.setAttribute('id', 'search-input');
 		input.setAttribute('autofocus', 'true');
-		input.addEventListener('keyup', e => {
-			if (e.keyCode === 13) {
-				this.startSearch();
-			}
-		});
 		document.getElementById('search-form').appendChild(input);
 	}
 
