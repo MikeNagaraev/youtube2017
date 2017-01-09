@@ -85,7 +85,7 @@ body {
 }
 
 #results {
-		width: 10000px;
+		width: auto;
 		height: 100%;
 		position: absolute;
 		left: 0;
@@ -107,8 +107,8 @@ body {
 }
 
 .videoList>li {
-		flex: 1;
-		max-width: 20%;
+		/*flex: 1;*/
+		width: 350px;
 		margin: 10px;
 		padding: 10px;
 		box-sizing: border-box;
@@ -124,19 +124,6 @@ body {
 		border: 2px solid #d0ffff;
 		box-shadow: 4px 3px 10px #ff0000, -4px -3px 10px #ff0000;
 }
-
-@media (max-width: 1300px) {
-		.videoList>li {
-				min-width: 30%;
-		}
-}
-
-@media (max-width: 800px) {
-		.videoList>li {
-				min-width: 40%;
-		}
-}
-
 
 /*	ANDROID SAMSUNG GALAXY S2		*/
 
@@ -170,6 +157,7 @@ body {
 .title-video a {
 		text-decoration: none;
 		color: #000000;
+		cursor: pointer;
 }
 
 .title-video a:hover {
@@ -191,7 +179,7 @@ body {
 .image-video iframe {
 		display: none;
 		width: 100%;
-		min-height: 30%;
+		height: 100%;
 }
 
 .image-video:hover .play-video {
@@ -307,14 +295,14 @@ body {
 }
 
 .footer {
-		width: 50%;
+		width: 500px;
 		margin: auto;
 		height: 60px;
 }
 
 .pagination {
 		padding: 0;
-		width: 60%;
+		width: 100%;
 		margin: auto;
 		list-style: none;
 }
@@ -336,28 +324,17 @@ body {
 }
 
 .pagination li .page {
+		display: block;
+		width: 100%;
 		text-align: center;
 		line-height: 50px;
 }
 
 .pagination li:hover {
-		background: #ff4c4c;
-		color: #ffffff;
+		background: #d0b0b0;
 }
 
-@media (max-width: 1540px) {
-		.pagination li {
-				margin: 0 5px;
-		}
-}
-
-@media (max-width: 1100px) {
-		.pagination li {
-				width: 30px;
-				height: 30px;
-				margin: 0 3px;
-		}
-		.pagination li .page {
-				line-height: 30px;
-		}
+.active {
+		background: #ff4c4c !important;
+		color: #ffffff !important;
 }

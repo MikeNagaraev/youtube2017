@@ -1,11 +1,8 @@
-const apiKey = 'AIzaSyAeSlcNwi1BcFtSx_LX6Yv3o-OozPJ5aLk'; //AIzaSyBq_TNf3mo1y7mI6Yrtb23E5t1qA7eZlxEx
-//
-//
 import SlideManager from './slideManager'
+const apiKey = 'AIzaSyAeSlcNwi1BcFtSx_LX6Yv3o-OozPJ5aLk';
 const maxQueryCount = 15;
 export default class Loader {
 	constructor() {
-		this.queryCount = maxQueryCount;
 		this.nextPage = '';
 		this.value = '';
 		this.wasLoaded = false;
@@ -13,77 +10,40 @@ export default class Loader {
 
 	loadVideos(valueQuery) {
 		this.value = valueQuery;
-		console.log(this.wasLoaded)
 		if (this.wasLoaded) {
 			this.nextPage = '';
 			this.manager.reInit();
 		} else {
 			this.manager = new SlideManager(this);
 			this.wasLoaded = true;
-			this.manager.pinSwipe()
+			this.manager.pinListeners();
 		}
 		this.getVideos();
-
-
-		// this.fakeVideos();
 	}
 
-	// fakeVideos() {
-	// 	let fakeVideos = [];
-	// 	let fakeItem = {
-	// 		hrefYouTube: 'https://www.youtube.com/watch?v=' + 'KesUyAZ1cHk',
-	// 		iframe: 'https://www.youtube.com/embed/' + 'KesUyAZ1cHk',
-	// 		title: 'Title',
-	// 		imgUrl: 'https://i.ytimg.com/vi/OBSx0laWFZk/maxresdefault.jpg',
-	// 		channel: 'channel',
-	// 		date: '2015-11-11',
-	// 		views: 120,
-	// 		likes: 230,
-	// 		dislikes: 10,
-	// 		comments: 10,
-	// 		description: 'blablablabla',
-	// 		videoId: 'KesUyAZ1cHk'
-	// 	}
-	// 	for (let i = 0; i < 12; i++) {
-	// 		fakeVideos.push(fakeItem)
-	// 	}
-	// 	let slideManager = new SlideManager();
-	// 	slideManager.getItems(fakeVideos);
-	// }
-
 	getVideos() {
-			const searchUrl = 'https://www.googleapis.com/youtube/v3/search?pageToken=';
+		const searchUrl = 'https://www.googleapis.com/youtube/v3/search?pageToken=';
 
-			let url = searchUrl + (this.nextPage ? this.nextPage : '') +
-				'&part=snippet&maxResults=' + maxQueryCount +
-				'&q=' + this.value + '&key=' + apiKey,
-				items;
-			const statisticsUrl = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id=';
-			fetch(url)
-				.then(response => response.json())
-				.then(response => {
-					this.nextPage = response.nextPageToken;
-					items = response.items;
-					return items;
-				})
-				.then(items => {
-					items = this.formObjects(items)
-					return items.slice(1, items.length);
-				})
-				.then(videoObjs => {
-					this.pushStatistics(videoObjs)
-				})
-		}
-		//
-		// checkCorrectData(items) {
-		// 	console.log('error')
-		// 	for (let i = 0; i < items.length; i++) {
-		// 		if (!items[i].id.videoId) {
-		// 			return false;
-		// 		}
-		// 	}
-		// 	return true;
-		// }
+		let url = searchUrl + (this.nextPage ? this.nextPage : '') +
+			'&part=snippet&maxResults=' + maxQueryCount +
+			'&q=' + this.value + '&key=' + apiKey,
+			items;
+		const statisticsUrl = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id=';
+		fetch(url)
+			.then(response => response.json())
+			.then(response => {
+				this.nextPage = response.nextPageToken;
+				items = response.items;
+				return items;
+			})
+			.then(items => {
+				items = this.formObjects(items)
+				return items.slice(1, items.length);
+			})
+			.then(videoObjs => {
+				this.pushStatistics(videoObjs)
+			})
+	}
 
 	formObjects(arrayVideos) {
 		let result = [];

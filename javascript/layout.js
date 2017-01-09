@@ -78,8 +78,6 @@ export default class Layout {
 		}
 	}
 
-	///////////////////////////////////////////////////////////////
-
 	renderSlides(slides) {
 		this.clearResults();
 		slides.forEach(slide => {
@@ -215,20 +213,58 @@ export default class Layout {
 	renderFooter() {
 		let footer = document.createElement('div'),
 			pagination = document.createElement('ul');
-
-
-		for (let i = 1; i <= 5; i++) {
-			let li = document.createElement('li'),
-				link = document.createElement('a');
-			link.setAttribute('class', 'page');
-			link.innerHTML = i;
-			li.appendChild(link);
-			pagination.appendChild(li);
-		}
 		footer.setAttribute('class', 'footer')
 		pagination.setAttribute('class', 'pagination');
 		footer.appendChild(pagination);
 		document.body.appendChild(footer);
 	}
 
+	clearFooter() {
+		let pagination = document.querySelector('.pagination');
+		pagination.innerHTML = '';
+	}
+
+	removeActiveState() {
+		let pages = document.querySelector('.pagination').children;
+		for (let i = 0; i < pages.length; i++) {
+			pages[i].className = "";
+		}
+	}
+
+	makeActiveState(page) {
+		this.removeActiveState();
+		if (typeof page != 'number') {
+			page.classList.add('active');
+		} else {
+			document.querySelector('.pagination').children[page].classList.add('active');
+		}
+	}
+
+	addPageToFooter(newPageId) {
+		let pagination = document.querySelector('.pagination');
+		if (pagination.children.length < 5) {
+			let li = document.createElement('li'),
+				link = document.createElement('a');
+			link.setAttribute('class', 'page');
+			link.innerHTML = newPageId;
+			li.appendChild(link);
+			pagination.appendChild(li);
+		}
+	}
+
+	getActivePageId() {
+		let pages = document.querySelector('.pagination').children;
+		for (let i = 0; i < pages.length; i++) {
+			if (pages[i].className == 'active') {
+				return i;
+			}
+		}
+	}
+
+	changeValuesPages(start, end) {
+		this.clearFooter();
+		for (let i = start; i <= end; i++) {
+			this.addPageToFooter(i);
+		}
+	}
 }

@@ -1,14 +1,18 @@
 import Layout from './layout';
 import Swipe from './swipe';
 import Slide from './slide';
+import {
+	maxCountInScreen,
+} from './resize';
 
-const maxItemsInSlide = 4;
-let swipe = new Swipe();
+
 export default class SlideManager {
 	constructor(loader) {
 		this.loader = loader;
 		this.slides = [];
-		this.resize = false;
+		this.maxItems = 4;
+		this.wasLeftSlide = false;
+		this.swipe = new Swipe();
 		this.layout = new Layout();
 		this.buffer = [];
 	}
@@ -17,19 +21,34 @@ export default class SlideManager {
 		this.animateTransition(false);
 		this.slides = [];
 		this.buffer = [];
+		this.layout.clearResults();
+		this.layout.clearFooter();
 	}
 
-	pushItem(item) {
-		this.buffer.push(item);
-		if (this.buffer.length === maxItemsInSlide) {
+	pushItem(video) {
+		this.buffer.push(video);
+		this.maxItems = maxCountInScreen()
+		if (this.buffer.length === this.maxItems) {
 			if (this.slides.length === 0) {
 				this.slides.push(new Slide(this.buffer, 0, 'active'))
 			} else {
 				this.slides.push(new Slide(this.buffer,
-					this.slides[this.slides.length - 1].id + 1, 'passive'))
+					this.slides[this.slides.length - 1].id + 1))
 			}
 			this.layout.renderSlide(this.lastSlide());
+			this.layout.addPageToFooter(this.countSlides())
+			if (this.countSlides() === 1) {
+				this.layout.makeActiveState(0)
+			}
 			this.buffer = [];
+		}
+	}
+
+	pushItems(slides, countInSlide) {
+		for (let i = 0; i < slides.length; i++) {
+			slides[i].items.forEach(video => {
+				this.pushItem(video);
+			})
 		}
 	}
 
@@ -45,28 +64,53 @@ export default class SlideManager {
 		return this.slides.length;
 	}
 
-	slideLeft() {
+	setActiveSLide(slideId) {
+		if (slideId && slideId < this.countSlides()) {
+			for (let i = 0; i < this.countSlides(); i++) {
+				this.slides[i].setState('passive');
+			}
+			this.slides[slideId].setState('active');
+		}
+	}
+
+	slideLeft(transitionId) {
 		let oldActiveId = this.findActiveSlide();
 		if (oldActiveId) {
-			let newActiveId = oldActiveId - 1;
+			let newActiveId = typeof transitionId === 'number' ? transitionId : oldActiveId - 1;
 			this.slides[oldActiveId].setState('passive');
 			this.slides[newActiveId].setState('active');
 			let slideLeftPos = parseInt(this.slides[newActiveId].posLeft, 10);
-			this.animateTransition(true)
+			this.animateTransition(true);
+			this.resetLeftFlag();
+			this.changeFooterPage(newActiveId);
 			this.setContainerPos(-slideLeftPos);
 		}
 	}
 
-	slideRight() {
-		this.preLoadVideos();
+	slideRight(transitionId) {
 		let oldActiveId = this.findActiveSlide(),
-			newActiveId = oldActiveId + 1;
+			newActiveId = typeof transitionId === 'number' ? transitionId : oldActiveId + 1;
 		if (oldActiveId != this.slides.length - 1) {
 			this.slides[oldActiveId].setState('passive');
 			this.slides[newActiveId].setState('active');
 			let slideLeftPos = parseInt(this.slides[newActiveId].posLeft, 10);
-			this.animateTransition(true)
+			this.animateTransition(true);
+			this.resetLeftFlag();
+			this.changeFooterPage(newActiveId);
 			this.setContainerPos(-slideLeftPos);
+		}
+		this.preLoadVideos();
+	}
+
+	changeFooterPage(newSlideId) {
+		if (newSlideId == 1) {
+			this.layout.changeValuesPages(newSlideId, this.slides.length)
+			this.layout.makeActiveState(newSlideId);
+		} else if (newSlideId == 0) {
+			this.layout.makeActiveState(newSlideId);
+		} else {
+			this.layout.changeValuesPages(newSlideId - 1, this.slides.length)
+			this.layout.makeActiveState(2);
 		}
 	}
 
@@ -99,18 +143,82 @@ export default class SlideManager {
 		this.setContainerPos(-slideLeftPos);
 	}
 
+	setLeftFlag(slideId) {
+		console.log(this.slides[slideId].items[0].title)
+		this.slides[slideId].items[0].left = true;
+		this.wasLeftSlide = true;
+	}
+
+	resetLeftFlag() {
+		if (this.wasLeftSlide) {
+			for (let i = 0; i < this.countSlides(); i++) {
+				this.slides[i].items.forEach(video => {
+					if (video.left) video.left = false;
+				})
+			}
+			this.wasLeftSlide = false;
+		}
+	}
+
+	findSlideByLeftFlag() {
+		for (let i = 0; i < this.countSlides(); i++) {
+			for (let j = 0; j < this.slides[i].items.length; j++) {
+				if (this.slides[i].items[j].left) return i;
+			}
+		}
+	}
+
+	pinListeners() {
+		this.pinSwipe();
+		this.pinTransitionPage();
+		this.pinResize();
+	}
+
+	pinTransitionPage() {
+		document.querySelector('.pagination').addEventListener('click', e => {
+			if (e.target.className == 'page') {
+				let currentSlide = this.findActiveSlide(),
+					newSlide = parseInt(e.target.innerHTML, 10) - 1;
+				if (newSlide > currentSlide) {
+					this.slideRight(newSlide);
+				} else if (newSlide < currentSlide) {
+					this.slideLeft(newSlide);
+				}
+			}
+		})
+	}
+
+	pinResize() {
+		window.addEventListener('resize', () => {
+			if (this.countSlides()) {
+				let wasActiveSlideId = this.findActiveSlide();
+				if (!this.wasLeftSlide) {
+					this.setLeftFlag(wasActiveSlideId)
+				} else {
+					let slides = this.slides;
+					this.reInit();
+					this.pushItems(slides);
+					let resizedSlideId = this.findSlideByLeftFlag();
+					this.setActiveSLide(resizedSlideId)
+					this.setContainerPos(-resizedSlideId * document.documentElement.clientWidth)
+					this.changeFooterPage(resizedSlideId)
+				}
+			}
+		})
+	}
+
+
 	pinSwipe() {
 		document.getElementById('results').addEventListener('mousedown', (e) => {
-			if (e.target.className == 'videoList') {
-				swipe.mouseDown = true;
-				swipe.x = e.pageX;
-				swipe.y = e.pageY;
-			}
+			e.preventDefault();
+			this.swipe.mouseDown = true;
+			this.swipe.x = e.pageX;
+			this.swipe.y = e.pageY;
 		});
 
 		document.getElementById('results').addEventListener('mousemove', e => {
-			if (swipe.mouseDown && this.slides.length) {
-				let deltaX = swipe.x - e.pageX;
+			if (this.swipe.mouseDown && this.slides.length) {
+				let deltaX = this.swipe.x - e.pageX;
 				let slideLeftPos = parseInt(this.slides[this.findActiveSlide()].posLeft, 10);
 				this.animateTransition(false)
 				this.setContainerPos(-slideLeftPos - deltaX);
@@ -118,8 +226,8 @@ export default class SlideManager {
 		});
 		document.addEventListener('mouseup', (e) => {
 			e.preventDefault();
-			if (swipe.mouseDown) {
-				let deltaX = swipe.x - e.pageX;
+			if (this.swipe.mouseDown) {
+				let deltaX = this.swipe.x - e.pageX;
 				if (deltaX < -150) {
 					this.slideLeft();
 				} else {
@@ -130,7 +238,7 @@ export default class SlideManager {
 				} else {
 					this.backSlide()
 				}
-				swipe.mouseDown = false;
+				this.swipe.mouseDown = false;
 			};
 		});
 	}
